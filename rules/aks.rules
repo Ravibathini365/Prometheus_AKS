@@ -1,0 +1,61 @@
+groups:
+  - name: AKS_alerts_Cluster_pod_usage
+    rules:
+        - alert: Cluster_pod_Alert
+          expr: sum(kube_pod_info) / sum(kube_node_status_allocatable_pods) * 100 > 70
+          for: 4m
+          labels:
+            severity: warning
+          annotations:
+            summary: Cluster pod usage crossed 70%
+            description: "Cluster pod usage crossed 70%\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: AKS_alerts_Cluster_CPU_usage
+    rules:
+        - alert: Cluster_CPU_Alert
+          expr: sum(kube_pod_container_resource_requests_cpu_cores) / sum(kube_node_status_allocatable_cpu_cores) * 100 > 70
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Cluster CPU usage crossed 70%
+            description: "Cluster CPU usage crossed 70%\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: AKS_alerts_Cluster_memory_usage
+    rules:
+        - alert: Cluster_memory_Alert
+          expr: sum(kube_pod_container_resource_requests_memory_bytes) / sum(kube_node_status_allocatable_memory_bytes) * 100 > 70
+          for: 6m
+          labels:
+            severity: warning
+          annotations:
+            summary: Cluster memory usage crossed 70%
+            description: "Cluster memory usage crossed 70%\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: AKS_alerts_node_info
+    rules:
+        - alert: Node_mismatch
+          expr: sum(kube_node_info) != 6
+          for: 7m
+          labels:
+            severity: critical
+          annotations:
+            summary: Node mismatch
+            description: "check the node health - It is not matching the desired count\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: AKS_alerts_pod_failed_count
+    rules:
+        - alert: Pods_failed_count
+          expr: sum(kube_pod_status_phase{namespace=~"$namespace", phase="Failed"}) > 0
+          for: 8m
+          labels:
+            severity: critical
+          annotations:
+            summary: Pod failed count
+            description: "Pod failed count\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: AKS_alerts_Container_restart_in_last_30minutes
+    rules:
+        - alert: Container_restart_in_last_30minutes
+          expr: sum(delta(kube_pod_container_status_restarts_total{namespace!="kube-system"}[30m])) > 5
+          for: 9m
+          labels:
+            severity: critical
+          annotations:
+            summary: Container restart count
+            description: "Container restart count in last 30 minutes\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

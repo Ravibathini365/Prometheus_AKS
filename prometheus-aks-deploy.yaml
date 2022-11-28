@@ -1,0 +1,81 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: prom-storage-pvc
+provisioner: kubernetes.io/azure-file
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+  - dir_mode=0755
+  - file_mode=0755
+  - uid=0
+  - gid=0
+  - mfsymlinks
+  - cache=strict
+parameters:
+  skuName: Standard_LRS
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prom-storage-pvc
+  namespace: monitoring
+  labels:
+    vol: prom-storage
+spec:
+  storageClassName: prom-storage-pvc
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  volumeName: "pvc-1a4bb26f-d77c-41ba-b00d-6222172f1716"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: vscojfrogrhel.vsazure.com/infra-images/prometheuscentralus:latest
+        ports:
+        - containerPort: 9090
+          name: http-metrics
+        volumeMounts:
+        - name: prometheus-persistent-storage-store
+          mountPath: /prometheus
+      imagePullSecrets:
+      - name: etocoreinfra-secret
+      volumes:
+      - name: prometheus-persistent-storage-store
+        persistentVolumeClaim:
+          claimName: prom-storage-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: monitoring
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.11.8.130
+  ports:
+  - name: http-metrics
+    port: 9090
+    targetPort: http-metrics
+  #- port: 80
+    #targetPort: 9090
+  selector:
+    app: prometheus

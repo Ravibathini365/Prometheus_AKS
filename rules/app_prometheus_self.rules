@@ -1,0 +1,61 @@
+#####
+# All rules here are specific to an application
+# and are not already defined in a global level
+# or are custom thresholds of global alerts (cpu, mem, disk)
+#####
+groups:
+  - name: SELF MONITORING ALERTS
+    rules:
+      - alert: Self Monitoring - Too Many Restarts
+        expr: changes(process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"}[15m]) > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus too many restarts (instance {{ $labels.instance }})
+          description: "Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.\n  VALUE = {{ $value }}\n  [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+      - alert: Self Monitoring - Targets Missing
+        expr: count by (job) (up) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus all targets missing (instance {{ $labels.instance }})
+          description: "A Prometheus job does not have living target anymore.\n  VALUE = {{ $value }}\n  [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+      - alert: Self Monitoring - Config Reload Failure
+        expr: prometheus_config_last_reload_successful != 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus configuration reload failure (instance {{ $labels.instance }})
+          description: "Prometheus configuration reload error\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]" 
+
+      - alert: Self Monitoring - Rule Evaluation Failure
+        expr: increase(prometheus_rule_evaluation_failures_total[3m]) > 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus rule evaluation failures (instance {{ $labels.instance }})
+          description: "Prometheus encountered {{ $value }} rule evaluation failures, leading to potentially ignored alerts.\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]" 
+
+      - alert: Self Monitoring - No Alertmanager Connectivity
+        expr: prometheus_notifications_alertmanagers_discovered < 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
+          description: "Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+      - alert: Self Monitoring - Alertmanager config reload failure
+        expr: alertmanager_config_last_reload_successful != 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus AlertManager configuration reload failure (instance {{ $labels.instance }})
+          description: "AlertManager configuration reload error\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

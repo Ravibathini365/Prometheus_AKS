@@ -1,0 +1,11 @@
+groups:
+  - name: NTP_alerts
+    rules:
+        - alert: NTP_Service_is_DOWN
+          expr: node_systemd_unit_state{job="NTP_Server",name="ntpd.service",state="active"} != 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd ntpd.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd ntpd.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

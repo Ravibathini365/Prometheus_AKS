@@ -1,0 +1,82 @@
+#####
+# System Resources Alerts 
+# Ex: Disk, CPU, Mem, Is System Alive
+#####
+groups:
+  ## Instance Alerts - Is VM Up or Not
+  - name: Instance_Alerts_Health
+    rules:
+      - alert: Check the host health.
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: Monitoring reports {{ $labels.instance }} as unhealthy"
+          description: "Host Unhealthy Alert {{ $labels.instance }} \n [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  ## Memory Usage Alerts - WARNING = 95-97% usage / CRITICAL = >98% Usage for 10 minutes for either.
+  - name: Mem_Usage_WARN_95_97
+    rules:
+      - alert: mem_usage_warn_95_97
+        expr: (((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100) <= 5) and (((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100) <= 3)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "WARNING: Mem Usage Running High Host (instance {{ $labels.instance }})"
+          description: "Memory Usage on {{ $labels.instance }} has been at warning levels for at least 10 mins. [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Mem_Usage_CRIT_98_100
+    rules:
+      - alert: mem_usage_crit_98_100
+        expr: (((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100) <= 2)
+        for: 10m
+        labels:
+          severity: crtical
+        annotations:
+          summary: "CRITICAL: Mem Usage Running High Host (instance {{ $labels.instance }})"
+          description: "Memory Usage on {{ $labels.instance }} has been at critical levels for at least 10 mins. [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  ## CPU Usage Alerts - WARNING = 90-94% / CRITICAL = 95-100% at 10 mins for either.
+  - name: CPU_Load_Usage_WARN_90_94
+    rules:
+      - alert: cpu_load_usage_warn_90_94
+        expr: (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) >= 90) and (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) <= 94)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: WARNING High CPU load for host {{ $labels.instance }}
+          description: "CPU load is in WARNING Levels between 90-94% \n  VALUE = {{ $value }} \n  [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: CPU_Load_Usage_CRIT_95_100
+    rules:
+      - alert: cpu_load_usage_crit_95_100
+        expr: (100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 94)
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: CRITICAL High CPU load for host {{ $labels.instance }}
+          description: "CPU load is at CRTICAL levels at 95% or above \n VALUE = {{ $value }} \n  [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  ## DISK Usage Alerts - WARNING = 85-94% for 15 mins / CRITICAL = 95-100% for 10 mins
+  - name: Disk_Usage_WARN_85_95
+    rules:
+      - alert: disk_usage_warn_85-95
+        expr: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes <= 15 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) and ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes <= 6 and ON (instance, device, mountpoint) node_filesystem_readonly == 0)
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: WARNING Host {{ $labels.instance }} disk availability is low
+          description: "Disk Usage is in the 85-95% range \n VALUE = {{ $value }} \n [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Disk_Usage_CRIT_95_100
+    rules:
+      - alert: disk_usage_crit_95_100
+        expr: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes <= 5 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) 
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: CRITICAL Host {{ $labels.instance }} disk availability is nearly or at 0
+          description: "Disk Usage is above 95% \n VALUE = {{ $value }} \n [ Refer to this link for remediations: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

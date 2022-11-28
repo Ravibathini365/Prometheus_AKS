@@ -1,0 +1,77 @@
+groups:
+  - name: SSHD_Service_Alerts
+    rules:
+        - alert: SSHd service is down
+          expr: node_systemd_unit_state{job="Azure-Nodes", name="sshd.service", state="active"} != 1
+          for: 6m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd sshd.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd sshd.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: FIREWALLD_Service_Alerts
+    rules:
+        - alert: Firewalld service is UP
+          expr: node_systemd_unit_state{job="Azure-Nodes", name="firewalld.service", state="active"} == 1
+          for: 7m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd firewalld.service is UP in (instance {{ $labels.instance }})
+            description: "Systemd firewalld.service is UP \n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: ONEAGENT_Service_Alerts
+    rules:
+        - alert: Oneagent service is down
+          expr: node_systemd_unit_state{job="Azure-Nodes", name="oneagent.service", state="active"} != 1
+          for: 8m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd oneagent.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd oneagent.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: RSYSLOG_Service_Alerts
+    rules:
+        - alert: Rsyslog service is down
+          expr: node_systemd_unit_state{job="Azure-Nodes", name="rsyslog.service", state="active"} != 1
+          for: 8m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd rsyslog.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd rsyslog.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: FLUENTD_Service_Alerts
+    rules:
+        - alert: FluentD service is down
+          expr: node_systemd_unit_state{instance=~"vsazetoflntp00.+",name="td-agent.service",state="active"} != 1
+          for: 9m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd td-agent.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd td-agent.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: Vault_Service_Alerts
+    rules:
+        - alert: Vault service is down
+          expr: node_systemd_unit_state{job="Azure-Nodes",name="vault.service",state="active"} != 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd vault.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd vault.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: Jenkins_Service_Alerts
+    rules:
+        - alert: Jenkins service is down
+          expr: node_systemd_unit_state{instance="vsazetojnkpd001",name="jenkins.service",state="active"} != 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: Systemd jenkins.service is crashed in (instance {{ $labels.instance }})
+            description: "Systemd jenkins.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

@@ -1,0 +1,92 @@
+#####
+# The following rules monitor systemctl services
+# and whether they are running or not
+#####
+groups:
+  ## These Alerts Check the Node Exporters to make sure they are running.
+  ## Only checks node_exporter and blackbox_exporter.
+  ## service specific exporter is in app specific rules file
+  - name: EXPORTER Service - Node Exporter Service
+    rules:
+      - alert: Node Exporter Service Check
+        expr: node_systemd_unit_state{job="Azure-Nodes", name="node_exporter.service", state="active"} != 1
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: node_exporter service is not in active state on host {{ $labels.instance }}
+          description: "Systemd service node_exporter.service is not active \n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: EXPORTER Service - Blackbox Exporter Service
+    rules:
+      - alert: Blackbox Exporter Service Check
+        expr: node_systemd_unit_state{job="Blackbox-nodes", name="blackbox_exporter.service", state="active"} != 1
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: blackbox_exporter service is not in active state on host {{ $labels.instance }}
+          description: "Systemd service blackbox_exporter.service is not active \n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  ## The following check Generic OS/Non-App specific services
+  ## and make sure they are running.
+  ## 
+  - name: Systemd OS Service - SSHD
+    rules:
+      - alert: SSHD Service is Down
+        expr: node_systemd_unit_state{job="Azure-Nodes", name="sshd.service", state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd sshd.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd sshd.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Systemd OS Service - SSSD
+    rules:
+      - alert: SSSD Service is Down
+        expr: node_systemd_unit_state{job="Azure-Nodes", name="sssd.service", state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd sssd.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd sssd.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Systemd OS Service - RSYSLOG
+    rules:
+      - alert: RSYSLOG Service is Down
+        expr: node_systemd_unit_state{job="Azure-Nodes", name="rsyslog.service", state="active"} != 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd rsyslog.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd rsyslog.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]" 
+  - name: Systemd OS Service - FLUENTD
+    rules:
+      - alert: FluentD service is down
+        expr: node_systemd_unit_state{instance=~"vsazetoflntp00.+",name="td-agent.service",state="active"} != 1
+        for: 9m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd td-agent.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd td-agent.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Systemd OS Service - Dynatrace ONEAGENT
+    rules:
+      - alert: ONEAGENT Service Is Down
+        expr: node_systemd_unit_state{job="Azure-Nodes", name="oneagent.service", state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd oneagent.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd oneagent.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Systemd OS Service - CHRONYD
+    rules:
+      - alert: chronyd Service Is Down
+        expr: node_systemd_unit_state{job="Azure-Nodes", name="chronyd.service", state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd chronyd.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd chronyd.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

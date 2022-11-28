@@ -1,0 +1,11 @@
+groups:
+  - name: Artifactory_License_check
+    rules:
+        - alert: Artifactory License Alert
+          expr: month(artifactory_system_license{job='Artifactory_Server'}) <= 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Artifactory license is about to expire(instance {{ $labels.instance }})
+            description: "Artifactory license is going to expire in  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

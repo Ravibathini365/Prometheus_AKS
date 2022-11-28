@@ -1,0 +1,41 @@
+groups:
+  - name: DNS_SERVERFAIL
+    rules:
+        - alert: DNS Server fail
+          expr:  increase(bind_responses_total{job="DNS_Server_Bind_exporter",result="SERVFAIL"}[120s]) > 40
+          for: 6m
+          labels:
+            severity: warning
+          annotations:
+            summary: Check the DNS health of the node (instance {{ $labels.instance }})
+            description: "DNS health Alert, SERVERFAIL count increased\n VALUE = {{ $value }}\n  [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: DNS BIND_Query Errors
+    rules:
+        - alert: DNS Bind query error 
+          expr: increase(bind_query_errors_total{job="DNS_Server_Bind_exporter"}[120s]) > 10
+          for: 7m
+          labels:
+            severity: warning
+          annotations:
+            summary: DNS Bind query error Alert(instance {{ $labels.instance }})
+            description: "DNS Bind query error count is increasing.\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: DNS_Resolver_Response_Errors
+    rules:
+        - alert: DNS Resolver Response Errors
+          expr: increase(bind_resolver_response_errors_total{job="DNS_Server_Bind_exporter"}[120s]) > 40
+          for: 8m
+          labels:
+            severity: warning
+          annotations:
+            summary: DNS Resolver Response Errors count is increasing in the node.(instance {{ $labels.instance }})
+            description: "DNS Resolver Response Error count \n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: DNS_Resolver_Query_Error
+    rules:
+        - alert: DNS Resolver Query Error
+          expr: increase(bind_resolver_query_errors_total{job="DNS_Server_Bind_exporter"}[120s]) > 40 
+          for: 9m
+          labels:
+            severity: warning
+          annotations:
+            summary: DNS Resolver Query Error count is increasing in the node(instance {{ $labels.instance }})
+            description: "DNS Resolver Query Error count \n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

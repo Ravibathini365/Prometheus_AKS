@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metricbeat
+  namespace: monitoring
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: metricbeat
+  template:
+    metadata:
+      labels:
+        app: metricbeat
+    spec:
+      containers:
+      - name: metricbeat
+        image: etocoreinfraregistry.azurecr.io/metricbeat:latest
+        ports:
+        - containerPort: 9201
+      imagePullSecrets:
+      - name: etocoreinfra-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metricbeat
+  namespace: monitoring
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.3.9.89
+  ports:
+  - port: 80
+    targetPort: 9201
+  selector:
+    app: metricbeat

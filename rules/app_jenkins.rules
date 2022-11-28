@@ -1,0 +1,16 @@
+#####
+# All rules here are specific to an application
+# and are not already defined in a global level
+# or are custom thresholds of global alerts (cpu, mem, disk)
+#####
+groups:
+  - name: JENKINS - Service Status
+    rules:
+      - alert: Jenkins service is down
+        expr: node_systemd_unit_state{instance="vsazetojnkpd001",name="jenkins.service",state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Systemd jenkins.service is crashed in (instance {{ $labels.instance }})
+          description: "Systemd jenkins.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

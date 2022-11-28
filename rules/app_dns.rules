@@ -1,0 +1,57 @@
+#####
+# All rules here are specific to an application
+# and are not already defined in a global level
+# or are custom thresholds of global alerts (cpu, mem, disk)
+#####
+groups:
+  - name: DNS - Service Status
+    rules:
+      - alert: DNS service is down
+        expr: node_systemd_unit_state{job="DNS_Server_Node-exporter",name="named.service",state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: DNS named.service service is not running (instance {{ $labels.instance }})
+          description: "Systemd named.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  - name: DNS - SERVERFAIL 
+    rules:
+      - alert: DNS Server fail
+        expr:  increase(bind_responses_total{job="DNS_Server_Bind_exporter",result="SERVFAIL"}[120s]) > 40
+        for: 6m
+        labels:
+          severity: warning
+        annotations:
+          summary: Check the DNS health of the node (instance {{ $labels.instance }})
+          description: "DNS health Alert, SERVERFAIL count increased\n VALUE = {{ $value }}\n  [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: DNS - BIND Query
+    rules:
+      - alert: DNS Bind query error 
+        expr: increase(bind_query_errors_total{job="DNS_Server_Bind_exporter"}[120s]) > 10
+        for: 7m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS Bind query error Alert(instance {{ $labels.instance }})
+          description: "DNS Bind query error count is increasing.\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: DNS - RESOLVER Response
+    rules:
+      - alert: DNS Resolver Response Errors
+        expr: increase(bind_resolver_response_errors_total{job="DNS_Server_Bind_exporter"}[120s]) > 40
+        for: 8m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS Resolver Response Errors count is increasing in the node.(instance {{ $labels.instance }})
+          description: "DNS Resolver Response Error count \n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: DNS - Resolver Queries
+    rules:
+      - alert: DNS Resolver Query Error
+        expr: increase(bind_resolver_query_errors_total{job="DNS_Server_Bind_exporter"}[120s]) > 40 
+        for: 9m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS Resolver Query Error count is increasing in the node(instance {{ $labels.instance }})
+          description: "DNS Resolver Query Error count \n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

@@ -1,0 +1,17 @@
+#####
+# These rules dont quite fit into a category just yet.
+# Further refinement could end up moving rules from here to another
+# rule set.
+# This will be a catch-all rule set for now.
+#####
+groups:
+  - name: PING - Slow Response
+    rules:
+      - alert: Blackbox Probe Slow Ping
+        expr: avg_over_time(probe_icmp_duration_seconds[1m]) > 9
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: Slow ping response for (instance {{ $labels.instance }})
+          description: "Ping took more than 9s\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

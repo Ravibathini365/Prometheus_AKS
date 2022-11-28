@@ -1,0 +1,57 @@
+#####
+# All rules here are specific to an application
+# and are not already defined in a global level
+# or are custom thresholds of global alerts (cpu, mem, disk)
+#####
+groups:
+  ## JFrog Platform Checks
+  #
+  - name: JFROG - PLATFORM - License Check
+    rules:
+      - alert: JFROG Platform License Expiring Soon
+        expr: month(artifactory_system_license{job='Artifactory_Server'}) <= 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: JFROG License will need renewal soon
+          description: "Artifactory license is going to expire in  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  
+  ## Artifactory Checks
+  #
+  - name: JFROG - ARTIFACTORY - Service Status
+    rules:
+      - alert: ARTIFACTORY Service Is DOWN
+        expr: node_systemd_unit_state{job='JFROG_Artifactory_Prod_Exporter',name="artifactory.service",state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Artifactory is in a down state (instance {{ $labels.instance }})
+          description: "Systemd artifactory.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  ## XRay Checks
+  #
+  - name: JFROG - XRAY - Service Status
+    rules:
+      - alert: XRAY Service Is DOWN
+        expr: node_systemd_unit_state{job='JFROG_XRay_Prod_Exporter',name="xray.service",state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: XRay is in a down state (instance {{ $labels.instance }})
+          description: "Systemd xray.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+
+  ## Insight Checks
+  #
+  - name: JFROG - INSIGHT - Service Status
+    rules:
+      - alert: INSIGHT Service Is DOWN
+        expr: node_systemd_unit_state{job='JFROG_Insight_Prod_Exporter',name="insight.service",state="active"} != 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Insight is in a down state (instance {{ $labels.instance }})
+          description: "Systemd insight.service is crashed\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"

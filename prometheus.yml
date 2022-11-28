@@ -1,0 +1,320 @@
+global:
+  scrape_interval: 5m # By default, scrape targets every 15 seconds.
+  scrape_timeout: 60s
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: 'codelab-monitor'
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+
+rule_files:
+  - /etc/prometheus/rules/*.rules
+
+#remote_write: 
+#  - url: "http://vsazetombtpd0001.limited.brands.com:9201/write"
+
+alerting:
+      alertmanagers:
+      - scheme: http
+        static_configs:
+        - targets:
+          - "10.11.14.171"
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5m
+
+    static_configs:
+      - targets: ['prometheus.monitoring.svc.cluster.local:9090']
+
+#  - job_name: DNS_Server_Bind_exporter
+#    scheme: http
+#    static_configs:
+#    - targets:
+#        - "vsazcomdnspd001.limited.brands.com:9153"
+#        - "vsazcomdnspd002.limited.brands.com:9153"
+#        - "vsazcomdnspd003.limited.brands.com:9153"
+#        - "vsazcomdnspd004.limited.brands.com:9153"
+#        - "vsazcomdnspf001.limited.brands.com:9153"
+#        - "vsazcomdnspf002.limited.brands.com:9153"
+#        - "vsazcomdnspf003.limited.brands.com:9153"
+#        - "vsazcomdnspf004.limited.brands.com:9153"
+#        - "vsazcomdnsts001.limited.brands.com:9153"
+#        - "vsazcomdnsts002.limited.brands.com:9153"
+#        - "vsazcomdnsts003.limited.brands.com:9153"
+#        - "vsazcomdnsts004.limited.brands.com:9153"
+#        - "vsazetodnspd001.limited.brands.com:9153"
+#        - "vsazetodnspd002.limited.brands.com:9153"
+#        - "vsazetodnspd003.limited.brands.com:9153"
+#        - "vsazetodnspd004.limited.brands.com:9153"
+#        - "vsazetodnspd005.limited.brands.com:9153"
+#        - "vsazetodnspd006.limited.brands.com:9153"
+#        - "vsazetodnspd007.limited.brands.com:9153"
+#        - "vsazetodnspd008.limited.brands.com:9153"
+#        - "vsazetodnspd009.limited.brands.com:9153"
+#        - "vsazetodnspd010.limited.brands.com:9153"
+#        - "vsazetodnspd011.limited.brands.com:9153"
+#        - "vsazfwddnspd001.limited.brands.com:9153"
+#        - "vsazfwddnspd002.limited.brands.com:9153"
+#        - "vsazfwddnspd003.limited.brands.com:9153"
+#        - "vsazfwddnspd004.limited.brands.com:9153"
+#        - "vsazfwddnspf001.limited.brands.com:9153"
+#        - "vsazfwddnspf002.limited.brands.com:9153"
+#        - "vsazfwddnspf003.limited.brands.com:9153"
+#        - "vsazfwddnspf004.limited.brands.com:9153"
+#        - "vsazfwddnsts001.limited.brands.com:9153"
+#        - "vsazfwddnsts002.limited.brands.com:9153"
+#        - "vsazfwddnsts003.limited.brands.com:9153"
+#        - "vsazfwddnsts004.limited.brands.com:9153"
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        separator: ;
+#        regex: (^[a-zA-Z0-9\-]*)(.limited.brands.com)(.*)
+#        target_label: service
+#        replacement: $1
+#        action: replace
+#
+#  - job_name: DNS_Server_Node-exporter
+#    scheme: http
+#    static_configs:
+#    - targets:
+#        - "vsazcomdnspd001.limited.brands.com:9100"
+#        - "vsazcomdnspd002.limited.brands.com:9100"
+#        - "vsazcomdnspd003.limited.brands.com:9100"
+#        - "vsazcomdnspd004.limited.brands.com:9100"
+#        - "vsazcomdnspf001.limited.brands.com:9100"
+#        - "vsazcomdnspf002.limited.brands.com:9100"
+#        - "vsazcomdnspf003.limited.brands.com:9100"
+#        - "vsazcomdnspf004.limited.brands.com:9100"
+#        - "vsazcomdnsts001.limited.brands.com:9100"
+#        - "vsazcomdnsts002.limited.brands.com:9100"
+#        - "vsazcomdnsts003.limited.brands.com:9100"
+#        - "vsazcomdnsts004.limited.brands.com:9100"
+#        - "vsazetodnspd001.limited.brands.com:9100"
+#        - "vsazetodnspd002.limited.brands.com:9100"
+#        - "vsazetodnspd003.limited.brands.com:9100"
+#        - "vsazetodnspd004.limited.brands.com:9100"
+#        - "vsazetodnspd005.limited.brands.com:9100"
+#        - "vsazetodnspd006.limited.brands.com:9100"
+#        - "vsazetodnspd007.limited.brands.com:9100"
+#        - "vsazetodnspd008.limited.brands.com:9100"
+#        - "vsazetodnspd009.limited.brands.com:9100"
+#        - "vsazetodnspd010.limited.brands.com:9100"
+#        - "vsazetodnspd011.limited.brands.com:9100"
+#        - "vsazfwddnspd001.limited.brands.com:9100"
+#        - "vsazfwddnspd002.limited.brands.com:9100"
+#        - "vsazfwddnspd003.limited.brands.com:9100"
+#        - "vsazfwddnspd004.limited.brands.com:9100"
+#        - "vsazfwddnspf001.limited.brands.com:9100"
+#        - "vsazfwddnspf002.limited.brands.com:9100"
+#        - "vsazfwddnspf003.limited.brands.com:9100"
+#        - "vsazfwddnspf004.limited.brands.com:9100"
+#        - "vsazfwddnsts001.limited.brands.com:9100"
+#        - "vsazfwddnsts002.limited.brands.com:9100"
+#        - "vsazfwddnsts003.limited.brands.com:9100"
+#        - "vsazfwddnsts004.limited.brands.com:9100"
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        separator: ;
+#        regex: (^[a-zA-Z0-9\-]*)(.limited.brands.com)(.*)
+#        target_label: service
+#        replacement: ${1}:9100
+#        action: replace
+#
+#  - job_name: Artifactory_Insight_Xray_Node-exporter
+#    scheme: http
+#    static_configs:
+#    - targets:
+#        - "vsazetoartpd001.limited.brands.com:9100"
+#        - "vsazetoartpd002.limited.brands.com:9100"
+#        - "vsazetoartpd003.limited.brands.com:9100"
+#        - "vsazetoartpd004.limited.brands.com:9100"
+#        - "vsazetoartpd006.limited.brands.com:9100"
+#        - "vsazetoartpd007.limited.brands.com:9100"
+#        - "vsazetoartpd008.limited.brands.com:9100"
+#        - "vsazetoartpd009.limited.brands.com:9100"
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        separator: ;
+#        regex: (^[a-zA-Z0-9\-]*)(.limited.brands.com)(.*)
+#        target_label: service
+#        replacement: $1
+#        action: replace
+#
+#  - job_name: Morpheus_Server
+#    scheme: http
+#    static_configs:
+#    - targets:
+#        - "lxi0019.limited.brands.com:9100"
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        separator: ;
+#        regex: (^[a-zA-Z0-9\-]*)(.limited.brands.com)(.*)
+#        target_label: service
+#        replacement: $1
+#        action: replace
+#
+#  - job_name: NTP_Server
+#    scheme: http
+#    static_configs:
+#    - targets:
+#        - "vsazetontppd001.limited.brands.com:9100"
+#        - "vsazetontppd002.limited.brands.com:9100"
+#        - "vsazetontppd003.limited.brands.com:9100"
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        separator: ;
+#        regex: (^[a-zA-Z0-9\-]*)(.limited.brands.com)(.*)
+#        target_label: service
+#        replacement: $1
+#        action: replace
+#        
+#  - job_name: Artifactory_Server
+#    scheme: http
+#    static_configs:
+#    - targets:
+#        - "vsazetoartpd001.limited.brands.com:9531"
+#        - "vsazetoartpd002.limited.brands.com:9531"
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        separator: ;
+#        regex: (^[a-zA-Z0-9\-]*)(.limited.brands.com)(.*)
+#        target_label: service
+#        replacement: $1
+#        action: replace
+
+  - job_name: 'Azure-Nodes'
+    azure_sd_configs:
+      - subscription_id: '53d9c26a-7b7b-48d9-8304-3bce521290ec'
+        tenant_id: '865f3fef-b96b-4b1d-a7b6-0b4b3fcfc87e'
+        client_id: 'f2bf8546-d43f-4cff-87f3-e728fa07cc8f'
+        client_secret: 'WC~K01u-~rbd79dc0qaHn-L2dt6q-6YQBd'
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_azure_machine_tag_prometheuscentral]
+        regex: true.*
+        action: keep
+      - source_labels: [__meta_azure_machine_tag_node_exporter]
+        regex: true.*
+        action: keep
+#      - source_labels: [__meta_azure_machine_tag_private_ip]
+#        regex: (.+)
+#        action: keep
+      - source_labels: [__meta_azure_machine_name]
+        target_label: instance
+      - source_labels: [__meta_azure_machine_tag_private_ip]
+        regex: (.+)
+        replacement: ${1}:9100
+        target_label: __address__
+
+  - job_name: 'Blackbox-nodes'
+    azure_sd_configs:
+      - subscription_id: '53d9c26a-7b7b-48d9-8304-3bce521290ec'
+        tenant_id: '865f3fef-b96b-4b1d-a7b6-0b4b3fcfc87e'
+        client_id: 'f2bf8546-d43f-4cff-87f3-e728fa07cc8f'
+        client_secret: 'WC~K01u-~rbd79dc0qaHn-L2dt6q-6YQBd'
+        port: 9115
+    metrics_path: /probe
+    params:
+      module: [icmp]
+      target: [prometheus.io]
+      #debug: [true]
+    relabel_configs:
+      - source_labels: [__meta_azure_machine_tag_prometheuscentralnp]
+        regex: true.*
+        action: keep
+      - source_labels: [__meta_azure_machine_tag_node_exporter]
+        regex: true.*
+        action: keep
+#      - source_labels: [__meta_azure_machine_tag_private_ip]
+#        regex: (.+)
+#        action: keep
+      - source_labels: [__meta_azure_machine_name]
+        target_label: instance
+      - source_labels: [__meta_azure_machine_tag_private_ip]
+        regex: (.+)
+        replacement: ${1}:9115
+        target_label: __address__
+
+#  - job_name: kubernetes-nodes-cadvisor
+#    scrape_interval: 10s
+#    scrape_timeout: 10s
+#    scheme: https  # remove if you want to scrape metrics on insecure port
+#    tls_config:
+#      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+#    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+#    kubernetes_sd_configs:
+#      - role: node
+#    relabel_configs:
+#      - action: labelmap
+#        regex: __meta_kubernetes_node_label_(.+)
+#      # Only for Kubernetes ^1.7.3.
+#      # See: https://github.com/prometheus/prometheus/issues/2916
+#      - target_label: __address__
+#        replacement: kubernetes.default.svc:443
+#      - source_labels: [__meta_kubernetes_node_name]
+#        regex: (.+)
+#        target_label: __metrics_path__
+#        replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+#    metric_relabel_configs:
+#      - action: replace
+#        source_labels: [id]
+#        regex: '^/machine\.slice/machine-rkt\\x2d([^\\]+)\\.+/([^/]+)\.service$'
+#        target_label: rkt_container_name
+#        replacement: '${2}-${1}'
+#      - action: replace
+#        source_labels: [id]
+#        regex: '^/system\.slice/(.+)\.service$'
+#        target_label: systemd_service_name
+#        replacement: '${1}'
+#  - job_name: 'node-exporter-aks'
+#    kubernetes_sd_configs:
+#      - role: endpoints
+#    relabel_configs:
+#    - source_labels: [__meta_kubernetes_endpoints_name]
+#      regex: 'node-exporter'
+#      action: keep
+#  - job_name: 'kube-state-metrics'
+#    honor_timestamps: true
+#    scrape_interval: 5m
+#    scrape_timeout: 1m
+#    metrics_path: /metrics
+#    static_configs:
+#      - targets: ['kube-state-metrics.monitoring.svc.cluster.local:8080']
+
+#  - job_name: 'Elasticsearch-nodes'
+#    scrape_interval: 5m
+#    scrape_timeout: 1m 
+#    metrics_path: "/metrics"
+#    static_configs:
+#    - targets:
+#        - "vsazsdekmrpd001.limited.brands.com:9114"
+#        - "vsazsdekmrpd002.limited.brands.com:9114"
+#        - "vsazsdekmrpd003.limited.brands.com:9114"
+#        - "vsazsdekdtpd001.limited.brands.com:9114"
+#        - "vsazsdekdtpd002.limited.brands.com:9114"
+#        - "vsazsdekdtpd003.limited.brands.com:9114"
+#        - "vsazsdekdtpd004.limited.brands.com:9114"
+#        - "vsazsdekdtpd005.limited.brands.com:9114"
+#        - "vsazsdekdtpd006.limited.brands.com:9114"
+#        - "vsazsdekdtpd007.limited.brands.com:9114"
+#        - "vsazsdekdtpd008.limited.brands.com:9114"
+#        - "vsazsdekdtpd009.limited.brands.com:9114"
+#        - "vsazsdekibpd001.limited.brands.com:9114"
+#      labels:
+#        service: elasticsearch
+#    relabel_configs:
+#    - source_labels: [__address__]
+#      regex: '(.*)\:9108'
+#      target_label:  'instance'
+#      replacement:   '$1'
+#    - source_labels: [__address__]
+#      regex:         '.*\.(.*)\.lan.*'
+#      target_label:  'environment'
+#      replacement:   '$1'

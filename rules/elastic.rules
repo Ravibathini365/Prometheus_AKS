@@ -1,0 +1,51 @@
+groups:
+  - name: Elastic_alerts_Cluster_health
+    rules:
+        - alert: Cluster_health
+          expr: elasticsearch_cluster_health_status{cluster="ETO-Cluster",instance="vsazsdekmrpd001.limited.brands.com:9114",color!="green"} > 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: Cluster health is not GREEN
+            description: "Cluster health is not good%\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Elastic_alerts_Cluster_node_went_down
+    rules:
+        - alert: Cluster_node_went_down
+          expr: elasticsearch_cluster_health_number_of_nodes{cluster="ETO-Cluster",instance="vsazsdekmrpd001.limited.brands.com:9114"} != 12
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: One or more cluster node/s went down
+            description: "Cluster node went down\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Elastic_alerts_Cluster_CPU_usage
+    rules:
+        - alert: Elastic_Cluster_CPU_usage
+          expr: sum(elasticsearch_process_cpu_percent{cluster="ETO-Cluster",instance=~".+ek.+"}) / count(elasticsearch_process_cpu_percent{cluster="ETO-Cluster",instance=~".+ek.+"}) > 85
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Elastic_Cluster CPU usage crossed 70%
+            description: "Elastic_Cluster CPU usage crossed 70%\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Elastic_alerts_Unassigned_shard_count
+    rules:
+        - alert: Unassigned shard count
+          expr: elasticsearch_cluster_health_unassigned_shards{cluster="ETO-Cluster"} > 0 
+          for: 31m
+          labels:
+            severity: critical
+          annotations:
+            summary: Unassigned shard count
+            description: "Unassigned shard count\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
+  - name: Elastic_alerts_Avg_JVM_memory_used
+    rules:
+        - alert: Elastic_alerts_Avg_JVM_memory_used crossed 80%
+          expr: sum (elasticsearch_jvm_memory_used_bytes{cluster="ETO-Cluster"}) / sum (elasticsearch_jvm_memory_max_bytes{cluster="ETO-Cluster"}) * 100 > 80
+          for: 35m
+          labels:
+            severity: critical
+          annotations:
+            summary: Elastic_alerts_Avg_JVM_memory_used crossed 
+            description: "Elastic_alerts_Avg_JVM_memory_used crossed 80%\n  VALUE = {{ $value }}\n [ Refer to this link for quick fix: https://confluence.victoriassecret.com/display/AD/Prometheus+Alerts+and+its+Remediations ]"
